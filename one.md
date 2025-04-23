@@ -138,3 +138,118 @@ Just let me know, and I’ll rewrite the endpoint to mimic it.
 ---
 
 Want me to zip all this into a single ready-to-run project for you?
+
+
+Certainly! To expose your locally cached embedding and reranking models via a RESTful API using FastAPI, you can set up endpoints that allow clients to request embeddings or rerankings for given inputs. Below is a comprehensive guide to achieve this.
+
+---
+
+## 🧠 Prerequisites
+
+Ensure you have the necessary packages installed:
+
+```bash
+pip install fastapi uvicorn sentence-transformers
+```
+
+---
+
+## 🚀 FastAPI Server Implementation
+
+Here's a FastAPI application that exposes two endpoints:
+
+- **`/embed`**: Accepts a list of texts and returns their embeddings.
+- **`/rerank`**: Accepts a query and a list of documents, returning the documents ranked by relevance to the query.
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
+from sentence_transformers import SentenceTransformer, CrossEncoder
+
+app = FastAPI()
+
+# Load embedding models
+embedding_models = {
+    "default": SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2"),
+    # Add other models as needed
+}
+
+# Load reranking models
+reranking_models = {
+    "default": CrossEncoder("cross-encoder/ms-marco-MiniLM-L6-v2"),
+    # Add other models as needed
+}
+
+class EmbedRequest(BaseModel):
+    texts: List[str]
+    model: Optional[str] = "default"
+
+class RerankRequest(BaseModel):
+    query: str
+    documents: List[str]
+    model: Optional[str] = "default"
+
+@app.post("/embed")
+def embed(request: EmbedRequest):
+    model = embedding_models.get(request.model)
+    if not model:
+        raise HTTPException(status_code=404, detail="Embedding model not found")
+    embeddings = model.encode(request.texts, convert_to_tensor=False)
+    return {"embeddings": embeddings}
+
+@app.post("/rerank")
+def rerank(request: RerankRequest):
+    model = reranking_models.get(request.model)
+    if not model:
+        raise HTTPException(status_code=404, detail="Reranking model not found")
+    pairs = [(request.query, doc) for doc in request.documents]
+    scores = model.predict(pairs)
+    ranked_docs = sorted(zip(request.documents, scores), key=lambda x: x[1], reverse=True)
+    return {"reranked_documents": ranked_docs}
+```
+
+---
+
+## 🧪 Testing the API
+
+Run the server:
+
+```bash
+uvicorn your_script_name:app --reload
+```
+
+Replace `your_script_name` with the name of your Python file (without the `.py` extension).
+
+### Example Requests
+
+**Embedding:**
+
+```bash
+curl -X POST "http://127.0.0.1:8000/embed" \
+     -H "Content-Type: application/json" \
+     -d '{"texts": ["Hello world", "FastAPI is great!"], "model": "default"}'
+```
+
+**Reranking:**
+
+```bash
+curl -X POST "http://127.0.0.1:8000/rerank" \
+     -H "Content-Type: application/json" \
+     -d '{"query": "What is FastAPI?", "documents": ["FastAPI is a web framework.", "It is used for building APIs."], "model": "default"}'
+```
+
+---
+
+## 📚 Additional Resources
+
+For more detailed guidance on deploying machine learning models with FastAPI, consider the following resources:
+
+- [Deploying ML Models as API using FastAPI | GeeksforGeeks](https://www.geeksforgeeks.org/deploying-ml-models-as-api-using-fastapi/)
+- [Using FastAPI to Build Python Web APIs – Real Python](https://realpython.com/fastapi-python-web-apis/)
+
+These tutorials provide step-by-step instructions and best practices for building and deploying APIs with FastAPI.
+
+---
+
+If you need further assistance or customization, feel free to ask! 
