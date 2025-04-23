@@ -12,6 +12,22 @@ models--nomic-ai--nomic-embed-text-v2-moe         models--sentence-transformers-
 models--sentence-transformers--all-MiniLM-L12-v2  models--thenlper--gte-small
 
 
+Clone the repo:
+```bash
+git clone https://github.com/substratusai/stapi
+cd stapi
+```
+
+Install dependencies:
+```bash
+pip3 install -r requirements.txt
+```
+
+Run the webserver:
+```bash
+uvicorn main:app --port 8080 --reload
+
+
 
 
 Great questions! Let's clarify and then give you the full working setup.
