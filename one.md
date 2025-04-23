@@ -1,6 +1,19 @@
 qemu-system-x86_64 -m 5G -smp 1 -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::8080-:8080  -drive file=k.raw,format=raw,cache=writeback -virtfs local,path=/home/gitpod,security_model=mapped-xattr,mount_tag=hostshare,multidevs=remap  -nographic  -monitor  telnet:127.0.0.1:4444,server,nowait
 
 
+@RadFromOrange ➜ /workspaces/stapi (main) $ ls /home/codespace/.cache/huggingface/hub/
+models--intfloat--e5-small-v2                     models--sentence-transformers--all-MiniLM-L6-v2
+models--intfloat--multilingual-e5-large           models--sentence-transformers--all-mpnet-base-v2
+models--jinaai--jina-bert-implementation          models--sentence-transformers--all-roberta-large-v1
+models--jinaai--jina-embeddings-v2-base-en        models--sentence-transformers--msmarco-MiniLM-L6-cos-v5
+models--nomic-ai--nomic-bert-2048                 models--sentence-transformers--multi-qa-MiniLM-L6-cos-v1
+models--nomic-ai--nomic-embed-text-v1             models--sentence-transformers--paraphrase-MiniLM-L3-v2
+models--nomic-ai--nomic-embed-text-v2-moe         models--sentence-transformers--paraphrase-multilingual-MiniLM-L12-v2
+models--sentence-transformers--all-MiniLM-L12-v2  models--thenlper--gte-small
+
+
+
+
 Great questions! Let's clarify and then give you the full working setup.
 
 ---
